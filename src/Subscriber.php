@@ -48,14 +48,22 @@ abstract class Subscriber
 
     private function factoryWebhookCall(WebhookClient $whc, array $payload): WebhookCall
     {
-        return WebhookCall::create()
+        $wc = WebhookCall::create()
             ->withHeaders(['x-backend-token' => env('DIAGRO_BACKEND_TOKEN')])
             ->payload($payload)
             ->url($whc->url)
             ->useSecret($whc->signed_secret)
-            ->onConnection($this->connection)
-            ->onQueue($this->queue)
             ->verifySsl();
+
+        if(! empty($this->connection)) {
+            $wc->onConnection($this->connection);
+        }
+
+        if(! empty($this->queue)) {
+            $wc->onQueue($this->queue);
+        }
+
+        return $wc;
     }
 
     /**
