@@ -28,8 +28,13 @@ abstract class Subscriber
     protected ?string $queue = null;
 
 
-    protected function sendEventToWebhooks(array $payload, bool $sync = false)
+    protected function sendEventToWebhooks(string $eventName, array $data, bool $sync = false)
     {
+        $payload = [
+            'name' => $eventName,
+            'data' => $data
+        ];
+
         /** @var WebhookClient $whc */
         foreach(WebhookClient::all() as $whc) {
             $wc = $this->factoryWebhookCall($whc, $payload);
